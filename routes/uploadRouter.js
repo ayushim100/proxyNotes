@@ -2,6 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 var authenticate = require('../authenticate');
+const Videourl = require('../models/videourl');
+var mongodb = require('mongodb');
+var config = require('../config');
+var mongoClient = mongodb.MongoClient;
+var fs = require('fs');
+const url = config.mongoUrl;
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'public/videos');
@@ -32,10 +38,16 @@ uploadRouter.route('/')
     res.end('GET operation is not supported on /api/media/upload');
 })
 .post(authenticate.verifyUser,upload.single('videoFile'),  (req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.json(req.file);
-});
+    Videourl.register(new Videourl({originalname: req.body.originalname}), 
+    req.body.size, (err, videourl) => {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json(req.file);
+    
+   
+    });
+    
+})
 /*.put((req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /videoUpload');

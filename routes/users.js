@@ -4,6 +4,9 @@ var passport = require('passport');
 const bodyParser = require('body-parser');
 var User = require('../models/user');
 var authenticate = require('../authenticate');
+var mongodb = require('mongodb');
+var mongoClient = mongodb.MongoClient;
+var fs = require('fs');
 router.use(bodyParser.json());
 
 /* GET users listing. */
@@ -35,6 +38,7 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.json({success: true, token: token, status: 'You are successfully logged in!'});
 });
+
 router.get('/logout', (req, res) => {
   if (req.session) {
     req.session.destroy();
